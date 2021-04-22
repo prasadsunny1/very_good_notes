@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:very_good_notes/counter/counter.dart';
 import 'package:very_good_notes/l10n/l10n.dart';
+import 'package:very_good_notes/signin_page.dart';
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class App extends StatelessWidget {
         GlobalMaterialLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const CounterPage(),
+      home: EmailPasswordForm(),
     );
   }
 }
