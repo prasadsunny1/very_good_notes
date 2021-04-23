@@ -17,6 +17,8 @@ dependencies:
   firebase_core: "^1.0.4"
   firebase_auth: ^1.1.1
   flutter_signin_button: ^2.0.0
+  cloud_firestore: ^1.0.6
+  firebase_picture_uploader: ^1.2.3
 
 dev_dependencies:
   flutter_test:
