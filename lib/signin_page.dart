@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:very_good_notes/all_notes/all_notes_page.dart';
+import 'package:very_good_notes/resources/resources.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -19,71 +22,102 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       appBar: AppBar(
         title: const Text('Sign In page'),
       ),
-      body: Form(
-        key: _formKey,
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Sign in with email and password',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+      body: Center(
+        child: Form(
+          key: _formKey,
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SignInButton(
+                    Buttons.Google,
+                    onPressed: () {},
                   ),
-                ),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  validator: (String? value) {
-                    if (value?.isEmpty ?? false)
-                      return 'Please enter some text';
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  validator: (String? value) {
-                    if (value?.isEmpty ?? false)
-                      return 'Please enter some text';
-                    return null;
-                  },
-                  obscureText: true,
-                ),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.only(top: 16),
-                      alignment: Alignment.center,
-                      child: RaisedButton(
-                        // Buttons.Email,
-                        child: Text('Sign Up'),
-                        onPressed: () async {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            await _createUserWithEmailAndPassword();
-                          }
-                        },
-                      ),
+                  // Image.asset(Images.googleLoginButton),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text('OR'),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Sign in with email and password',
+                      style: Theme.of(context).textTheme.headline6,
                     ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 16),
-                      alignment: Alignment.center,
-                      child: RaisedButton(
-                        // Buttons.Email,
-                        child: Text('Sign In'),
-                        onPressed: () async {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            await _signInWithEmailAndPassword();
-                          }
-                        },
+                  ),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                        labelText: 'Email',
+                        hintText: 'Enter your Email Address'),
+                    validator: (String? value) {
+                      if (value?.isEmpty ?? false)
+                        return 'Please enter some text';
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(
+                        labelText: 'Password', hintText: 'Enter your Password'),
+                    validator: (String? value) {
+                      if (value?.isEmpty ?? false)
+                        return 'Please enter some text';
+                      return null;
+                    },
+                    obscureText: true,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: RaisedButton(
+                          // Buttons.Email,
+                          child: const Text('Sign Up'),
+                          onPressed: () async {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              var user =
+                                  await _createUserWithEmailAndPassword();
+                              if (user != null) {
+                                var route = MaterialPageRoute(
+                                  builder: (context) {
+                                    return AllNotesPage();
+                                  },
+                                );
+                                Navigator.of(context).push(route);
+                              }
+                            }
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      Container(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: RaisedButton(
+                          // Buttons.Email,
+                          child: Text('Sign In'),
+                          onPressed: () async {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              var user = await _signInWithEmailAndPassword();
+                              if (user != null) {
+                                var route = MaterialPageRoute(
+                                  builder: (context) {
+                                    return AllNotesPage();
+                                  },
+                                );
+                                Navigator.of(context).push(route);
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -98,13 +132,14 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
     super.dispose();
   }
 
-  _createUserWithEmailAndPassword() async {
+  Future<User?> _createUserWithEmailAndPassword() async {
     try {
       var userCredential = (await FirebaseAuth.instance
               .createUserWithEmailAndPassword(
                   email: _emailController.text,
                   password: _passwordController.text))
           .user;
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -113,11 +148,13 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       }
     } catch (e) {
       print(e);
+    } finally {
+      return null;
     }
   }
 
   // Example code of how to sign in with email and password.
-  Future<void> _signInWithEmailAndPassword() async {
+  Future<User?> _signInWithEmailAndPassword() async {
     try {
       final user = (await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
@@ -130,6 +167,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
           content: Text('${user?.email} signed in'),
         ),
       );
+      return user;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
