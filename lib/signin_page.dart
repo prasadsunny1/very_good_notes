@@ -25,99 +25,108 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       body: Center(
         child: Form(
           key: _formKey,
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SignInButton(
-                    Buttons.Google,
-                    onPressed: () {},
-                  ),
-                  // Image.asset(Images.googleLoginButton),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('OR'),
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Sign in with email and password',
-                      style: Theme.of(context).textTheme.headline6,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  Icons.sticky_note_2_outlined,
+                  size: 150,
+                  color: Theme.of(context).accentColor,
+                ),
+                SizedBox(height: 24),
+                // const Padding(
+                //   padding: EdgeInsets.all(16.0),
+                //   child: Text('OR'),
+                // ),
+                // Container(
+                //   alignment: Alignment.center,
+                //   child: Text(
+                //     'Sign in with email and password',
+                //     style: Theme.of(context).textTheme.headline6,
+                //   ),
+                // ),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                      labelText: 'Email', hintText: 'Enter your Email Address'),
+                  validator: (String? value) {
+                    if (value?.isEmpty ?? false)
+                      return 'Please enter some text';
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(
+                      labelText: 'Password', hintText: 'Enter your Password'),
+                  validator: (String? value) {
+                    if (value?.isEmpty ?? false)
+                      return 'Please enter some text';
+                    return null;
+                  },
+                  obscureText: true,
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text('Forgot Password?'),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      child: const Text('Sign Up'),
+                      onPressed: () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          var user = await _createUserWithEmailAndPassword();
+                          if (user != null) {
+                            var route = MaterialPageRoute(
+                              builder: (context) {
+                                return AllNotesPage();
+                              },
+                            );
+                            await Navigator.of(context).push(route);
+                          }
+                        }
+                      },
                     ),
+                    const SizedBox(width: 16),
+                    ElevatedButton(
+                      // Buttons.Email,
+                      child: const Text('Sign In'),
+                      onPressed: () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          var user = await _signInWithEmailAndPassword();
+                          if (user != null) {
+                            var route = MaterialPageRoute(
+                              builder: (context) {
+                                return AllNotesPage();
+                              },
+                            );
+                            await Navigator.of(context).push(route);
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Or',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6
+                        ?.copyWith(color: Colors.black38),
                   ),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                        labelText: 'Email',
-                        hintText: 'Enter your Email Address'),
-                    validator: (String? value) {
-                      if (value?.isEmpty ?? false)
-                        return 'Please enter some text';
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(
-                        labelText: 'Password', hintText: 'Enter your Password'),
-                    validator: (String? value) {
-                      if (value?.isEmpty ?? false)
-                        return 'Please enter some text';
-                      return null;
-                    },
-                    obscureText: true,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: RaisedButton(
-                          // Buttons.Email,
-                          child: const Text('Sign Up'),
-                          onPressed: () async {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              var user =
-                                  await _createUserWithEmailAndPassword();
-                              if (user != null) {
-                                var route = MaterialPageRoute(
-                                  builder: (context) {
-                                    return AllNotesPage();
-                                  },
-                                );
-                                Navigator.of(context).push(route);
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: RaisedButton(
-                          // Buttons.Email,
-                          child: Text('Sign In'),
-                          onPressed: () async {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              var user = await _signInWithEmailAndPassword();
-                              if (user != null) {
-                                var route = MaterialPageRoute(
-                                  builder: (context) {
-                                    return AllNotesPage();
-                                  },
-                                );
-                                Navigator.of(context).push(route);
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                SignInButton(
+                  Buttons.Google,
+                  onPressed: () {},
+                ),
+              ],
             ),
           ),
         ),
@@ -148,8 +157,6 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
       }
     } catch (e) {
       print(e);
-    } finally {
-      return null;
     }
   }
 
