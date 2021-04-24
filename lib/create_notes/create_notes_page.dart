@@ -34,7 +34,7 @@ class CreateNotesPage extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                    icon: Icon(Icons.add_a_photo),
+                    icon: const Icon(Icons.add_a_photo),
                     onPressed: () {
                       //TODO: pick and image and upload it to storage
                       //get the link and attach it to the storage
@@ -54,9 +54,9 @@ class CreateNotesPage extends StatelessWidget {
     );
   }
 
-  var fireStore = FirebaseFirestore.instance;
+  final fireStore = FirebaseFirestore.instance;
   String currentNoteDocRef = '';
-  _addOrUpdateNote(String title, String note) async {
+  Future<void> _addOrUpdateNote(String title, String note) async {
     var mapToUpdate = <String, dynamic>{};
     if (title.isNotEmpty) {
       mapToUpdate.addAll({'title': title});
@@ -67,10 +67,10 @@ class CreateNotesPage extends StatelessWidget {
 
     if (currentNoteDocRef.isNotEmpty) {
       // Update the existing Doc
-      var result = await fireStore
+      await fireStore
           .collection('notes')
           .doc(currentNoteDocRef)
-          .set(mapToUpdate);
+          .update(mapToUpdate);
     } else {
       // create a new note
 

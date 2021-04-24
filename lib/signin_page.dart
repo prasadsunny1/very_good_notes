@@ -2,16 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:very_good_notes/all_notes/all_notes_page.dart';
-import 'package:very_good_notes/resources/resources.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-class EmailPasswordForm extends StatefulWidget {
+class SignInPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _EmailPasswordFormState();
+  State<StatefulWidget> createState() => _SignInPageState();
 }
 
-class _EmailPasswordFormState extends State<EmailPasswordForm> {
+class _SignInPageState extends State<SignInPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -36,18 +36,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                   size: 150,
                   color: Theme.of(context).accentColor,
                 ),
-                SizedBox(height: 24),
-                // const Padding(
-                //   padding: EdgeInsets.all(16.0),
-                //   child: Text('OR'),
-                // ),
-                // Container(
-                //   alignment: Alignment.center,
-                //   child: Text(
-                //     'Sign in with email and password',
-                //     style: Theme.of(context).textTheme.headline6,
-                //   ),
-                // ),
+                const SizedBox(height: 24),
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
@@ -82,12 +71,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                         if (_formKey.currentState?.validate() ?? false) {
                           var user = await _createUserWithEmailAndPassword();
                           if (user != null) {
-                            var route = MaterialPageRoute(
-                              builder: (context) {
-                                return AllNotesPage();
-                              },
-                            );
-                            await Navigator.of(context).push(route);
+                            await pushToAllNotes(context);
                           }
                         }
                       },
@@ -105,7 +89,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                                 return AllNotesPage();
                               },
                             );
-                            await Navigator.of(context).push(route);
+                            await Navigator.of(context).pushReplacement(route);
                           }
                         }
                       },
@@ -124,7 +108,15 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                 ),
                 SignInButton(
                   Buttons.Google,
-                  onPressed: () {},
+                  onPressed: () async {
+                    var userCredential = await signInWithGoogle();
+                    if (userCredential.credential != null) {
+                      var route = MaterialPageRoute(builder: (context) {
+                        return AllNotesPage();
+                      });
+                      await Navigator.of(context).pushReplacement(route);
+                    }
+                  },
                 ),
               ],
             ),
@@ -132,6 +124,15 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
         ),
       ),
     );
+  }
+
+  Future pushToAllNotes(BuildContext context) async {
+    var route = MaterialPageRoute(
+      builder: (context) {
+        return AllNotesPage();
+      },
+    );
+    await Navigator.of(context).pushReplacement(route);
   }
 
   @override
@@ -182,5 +183,22 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
         ),
       );
     }
+  }
+
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final googleAuth = await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 }

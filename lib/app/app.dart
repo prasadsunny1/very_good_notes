@@ -5,9 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:very_good_notes/counter/counter.dart';
+import 'package:very_good_notes/all_notes/all_notes_page.dart';
 import 'package:very_good_notes/l10n/l10n.dart';
 import 'package:very_good_notes/signin_page.dart';
 
@@ -26,7 +27,9 @@ class App extends StatelessWidget {
         GlobalMaterialLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: EmailPasswordForm(),
+      home: FirebaseAuth.instance.currentUser != null
+          ? AllNotesPage()
+          : SignInPage(),
     );
   }
 }

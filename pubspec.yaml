@@ -18,6 +18,7 @@ dependencies:
   firebase_auth: ^1.1.1
   flutter_signin_button: ^2.0.0
   cloud_firestore: ^1.0.6
+  google_sign_in: ^5.0.2
   firebase_picture_uploader: ^1.2.3
 
 dev_dependencies:
