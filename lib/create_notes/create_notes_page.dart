@@ -65,8 +65,13 @@ class _CreateNotesPageState extends State<CreateNotesPage> {
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.delete),
-                    onPressed: () {
+                    onPressed: () async {
                       // delete the note
+                      await fireStore
+                          .collection('notes')
+                          .doc(currentNoteDocRef)
+                          .delete();
+                      Navigator.of(context).pop();
                     },
                   ),
                 ],
