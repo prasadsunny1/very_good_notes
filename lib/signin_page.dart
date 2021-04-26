@@ -59,7 +59,19 @@ class _SignInPageState extends State<SignInPage> {
                   obscureText: true,
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    if (_emailController.text.isNotEmpty) {
+                      await FirebaseAuth.instance
+                          .sendPasswordResetEmail(email: _emailController.text);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Instructions to reset password sent to your email address',
+                          ),
+                        ),
+                      );
+                    }
+                  },
                   child: const Text('Forgot Password?'),
                 ),
                 Row(
