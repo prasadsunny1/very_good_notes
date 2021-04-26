@@ -56,12 +56,12 @@ class _CreateNotesPageState extends State<CreateNotesPage> {
               const Spacer(),
               Row(
                 children: [
-                  IconButton(
-                      icon: const Icon(Icons.add_a_photo),
-                      onPressed: () {
-                        //TODO: pick and image and upload it to storage
-                        //get the link and attach it to the storage
-                      }),
+                  // IconButton(
+                  //     icon: const Icon(Icons.add_a_photo),
+                  //     onPressed: () {
+                  //       //TODO: pick and image and upload it to storage
+                  //       //get the link and attach it to the storage
+                  //     }),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.delete),
