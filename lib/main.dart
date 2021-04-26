@@ -8,6 +8,8 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bloc/bloc.dart';
@@ -25,6 +27,9 @@ void main() {
   runZonedGuarded(
     () async {
       await Firebase.initializeApp();
+      FirebaseFirestore.instance.settings = const Settings(
+          persistenceEnabled: true,
+          cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
 
       runApp(const App());
     },
